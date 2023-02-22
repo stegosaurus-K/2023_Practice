@@ -1,3 +1,4 @@
+// 定义一个创建节点的方法
 class ListNode {
   constructor(key, value) {
     this.key = key;
@@ -6,10 +7,11 @@ class ListNode {
     this.prev = null;
   }
 }
+// 实现 LRUCache 类
 class LRUCache {
   constructor(capacity) {
     this.capacity = capacity;
-    this.hash = {};
+    this.hashTable = {};
     this.count = 0;
     this.dummyHead = new ListNode();
     this.dummyTail = new ListNode();
@@ -17,12 +19,12 @@ class LRUCache {
     this.dummyTail.prev = this.dummyHead;
   }
   get(key) {
-    let node = this.hash[key];
+    let node = this.hashTable[key];
     if (node == null) return -1;
-    this.moveToHead(node);
+    this.moveTohead(node);
     return node.value;
   }
-  moveToHead(node) {
+  moveTohead(node) {
     this.removeFromList(node);
     this.addToHead(node);
   }
@@ -36,25 +38,27 @@ class LRUCache {
     node.prev = this.dummyHead;
     node.next = this.dummyHead.next;
     this.dummyHead.next.prev = node;
-    this.dummy.next = node;
+    this.dummyHead.next = node;
   }
   put(key, value) {
-    let node = this.hash[key];
+    let node = this.hashTable[key];
     if (node == null) {
       let newNode = new ListNode(key, value);
-
-      this.hash[key] = newNode;
-      this.moveToHead(newNode);
+      this.hashTable[key] = newNode;
       this.count++;
-      if (this.count > this.capacity) removeLRUItem();
+      this.addToHead(newNode);
+      if (this.count > this.capacity) {
+        this.removeLRUItem();
+      }
     } else {
       node.value = value;
-      this.moveToHead(node);
+      this.moveTohead(node);
     }
   }
+
   removeLRUItem() {
     let tail = this.popTail();
-    delete this.hash[tail.key];
+    delete this.hashTable[tail.key]; // 哈希表存储的是key
     this.count--;
   }
   popTail() {
